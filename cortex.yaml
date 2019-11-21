@@ -203,6 +203,7 @@ components:
       type: object
       required:
         - billing_address_sid
+        - invoiceAddressSid
       properties:
         billing_address_sid:
           type: string

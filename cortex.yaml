@@ -1,0 +1,285 @@
+openapi: 3.0.0
+info:
+    title: Billing Gate Keeper
+    description: Data access layer for BPIPE billing0 tables
+    contact:
+        email: billing-pipeline@twilio.com
+    version: 1.0.0
+    x-cortex-tag: billing-gate-keeper
+    x-cortex-link:
+      - name: Github Repository
+        type: DOCUMENTATION
+        url: https://code.hq.twilio.com/twilio/billing-gate-keeper
+      - name: Runbook
+        type: RUNBOOK
+        url: https://wiki.hq.twilio.com/display/RT/Billing-gate-keeper+Runbook
+      - name: Datadog Dashboard
+        type: DOCUMENTATION
+        url: https://app.datadoghq.com/dashboard/89v-urx-nzd/tx-billing-gate-keeper
+    x-pagerduty-service: P99WBNN
+paths:
+  /v1/Accounts/{AccountSid}/Billing/PIIData:
+    delete:
+      tags:
+        - Other
+      parameters:
+        - in: path
+          name: AccountSid
+          schema:
+            type: string
+          required: true
+          description: Account SID
+      summary: Delete the account's usage triggers, and POST and attribute to Accounts API saying that we've deleted all of the PII in billing land for this account.
+      responses:
+        '204':
+          description: Successfully deleted PII.
+  /v1/BillingTasks/{BillingTaskSid}:
+    get:
+      summary: Gets a BillingTask by ID.
+      tags:
+        - BillingTasks
+      parameters:
+        - in: path
+          name: BillingTaskSid
+          schema:
+            type: string
+          required: true
+          description: Billing Task SID
+      responses:
+        '200':
+          description: Billing task response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillingTaskResponse'
+    delete:
+      summary: Deletes a BillingTask by ID.
+      tags:
+        - BillingTasks
+      parameters:
+        - in: path
+          name: BillingTaskSid
+          schema:
+            type: string
+          required: true
+          description: Billing Task SID        
+      responses:
+        '204':
+          description: Successfully deleted
+  /v1/BillingTasks:
+    post:
+      summary: Create a BillingTask
+      tags:
+        - BillingTasks      
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BillingTaskPOSTParams'
+      responses:
+        '200':
+          description: Created BillingTask
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/BillingTaskPOSTParams'
+  /v1/StoredValueAccounts/{StoredValueAccountSid}:
+    get:
+      summary: Fetch a StoredValueAccount instance by SVA SID
+      tags:
+        - StoredValueAccounts
+      parameters:
+        - in: path
+          name: StoredValueAccountSid
+          schema:
+            type: string
+          required: true
+          description: SVA SID
+      responses:
+        '200':
+          description: Found SVA
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoredValueAccount'
+    put:
+      summary: Update a StoredValueAccount instance by SVA SID
+      tags:
+        - StoredValueAccounts
+      parameters:
+        - in: path
+          name: StoredValueAccountSid
+          schema:
+            type: string
+          required: true
+          description: SVA SID
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoredValueAccountPUTParams' 
+      responses:
+        '200':
+          description: Found SVA
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoredValueAccount'
+    delete:
+      summary: Delete a StoredValueAccount instance by SVA SID
+      tags:
+        - StoredValueAccounts
+      parameters:
+        - in: path
+          name: StoredValueAccountSid
+          schema:
+            type: string
+          required: true
+          description: SVA SID        
+      responses:
+        '204':
+          description: Successfully deleted SVA
+      
+  /v1/StoredValueAccounts/:
+    get:
+      summary: Fetch a StoredValueAccount instance by account SID
+      tags:
+        - StoredValueAccounts
+      parameters:
+        - in: query
+          name: AccountSid
+          schema:
+            type: string
+          required: true
+          description: Account SID
+      responses:
+        '200':
+          description: Found SVA
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoredValueAccount'
+    post:
+      summary: Create a new StoredValueAccount
+      tags:
+        - StoredValueAccounts
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/StoredValueAccountPOSTParams'    
+      responses:
+        '200':
+          description: Found SVA
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/StoredValueAccount'              
+components:
+  schemas:
+    StoredValueAccountPOSTParams:
+      type: object
+      properties:
+        accountSid:
+          type: string
+        billing_address_sid:
+          type: string
+        flags:
+          type: integer
+        invoiceAddressSid:
+          type: string
+        parentSid:
+          type: string
+        units:
+          type: string
+        companyName:
+          type: string
+        subsidiarySid:
+          type: string
+    StoredValueAccountPUTParams:
+      type: object
+      properties:
+        billing_address_sid:
+          type: string
+        flags:
+          type: integer
+        invoiceAddressSid:
+          type: string
+        parentSid:
+          type: string
+        shortId:
+          type: string
+        units:
+          type: string
+        companyName:
+          type: string
+        subsidiarySid:
+          type: string
+        creditLimit:
+          type: string
+    StoredValueAccount:
+      type: object
+      properties:
+        balance0:
+          type: number
+        balance1:
+          type: number
+        balance2:
+          type: number     
+        balance3:
+          type: number   
+        balance4:
+          type: number
+        balance5:
+          type: number
+        billingAddressSid:
+          type: string     
+        billingEmail:
+          type: string          
+        date_created:
+          type: string
+          format: date-time
+        date_updated:
+          type: string
+          format: date-time          
+        flags:
+          type: integer
+        invoiceAddressSid:
+          type: string
+        newBalance:
+          type: number
+        parentSid:
+          type: string
+        shortId:
+          type: string
+        sid:
+          type: string
+        units:
+          type: string
+        companyName:
+          type: string
+        subsidiarySid:
+          type: string
+        creditLimit:
+          type: string
+    BillingTaskPOSTParams:
+      type: object
+      properties:
+        accountSid:
+          type: string
+        className:
+          type: string
+        runTimestamp:
+          type: string
+          format: date-time
+    BillingTaskResponse:
+      type: object
+      properties:
+        date_created:
+          type: string
+          format: date-time
+        run_timestamp:
+          type: string

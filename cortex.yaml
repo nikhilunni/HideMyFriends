@@ -201,6 +201,8 @@ components:
           type: string
     StoredValueAccountPUTParams:
       type: object
+      required:
+        - billing_address_sid
       properties:
         billing_address_sid:
           type: string
